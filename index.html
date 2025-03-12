@@ -1,0 +1,118 @@
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { motion } from 'framer-motion';
+
+const PaginaBienestar = () => {
+  const [user, setUser] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [profile, setProfile] = useState({ name: '', goals: '', healthHistory: '', preferences: '' });
+  const [activity, setActivity] = useState({ type: '', duration: '', notes: '' });
+  const [activities, setActivities] = useState([]);
+  const [resources, setResources] = useState(['Artículo: Beneficios del Yoga', 'Video: Alimentación Saludable', 'Podcast: Meditación Guiada']);
+  const [search, setSearch] = useState('');
+  const [notifications, setNotifications] = useState('');
+
+  const handleLogin = () => {
+    setUser({ email });
+  };
+
+  const handleAddActivity = () => {
+    const newActivity = { ...activity, date: new Date().toLocaleString() };
+    setActivities([...activities, newActivity]);
+    setActivity({ type: '', duration: '', notes: '' });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-green-100 to-blue-50 p-6">
+      <motion.header className="flex justify-between items-center p-6 bg-white shadow-lg rounded-2xl mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
+        <h1 className="text-3xl font-extrabold text-green-700">Bienestar y Vida Saludable</h1>
+        <Button onClick={() => setUser(null)}>{user ? 'Cerrar Sesión' : 'Iniciar Sesión / Registrarse'}</Button>
+      </motion.header>
+
+      <main className="grid gap-6">
+        {!user ? (
+          <motion.div className="bg-white p-6 rounded-2xl shadow-xl" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
+            <h2 className="text-2xl font-bold text-blue-600 mb-4">Inicia Sesión</h2>
+            <Input placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} className="mb-4" />
+            <Input placeholder="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mb-4" />
+            <Button onClick={handleLogin} className="w-full">Iniciar Sesión</Button>
+          </motion.div>
+        ) : (
+          <Tabs defaultValue="recursos">
+            <TabsList>
+              <TabsTrigger value="recursos">Recursos Educativos</TabsTrigger>
+              <TabsTrigger value="actividades">Seguimiento de Actividades</TabsTrigger>
+              <TabsTrigger value="notificaciones">Notificaciones</TabsTrigger>
+              <TabsTrigger value="perfil">Perfil</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="recursos">
+              <Card className="transition-all hover:shadow-xl">
+                <CardContent>
+                  <h2 className="text-xl font-bold text-blue-600 mb-4">Recursos Educativos</h2>
+                  <Input placeholder="Buscar recursos" value={search} onChange={(e) => setSearch(e.target.value)} className="mb-4" />
+                  <ul>
+                    {resources.filter(resource => resource.toLowerCase().includes(search.toLowerCase())).map((resource, index) => (
+                      <li key={index} className="py-1">{resource}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="actividades">
+              <Card className="transition-all hover:shadow-xl">
+                <CardContent>
+                  <h2 className="text-xl font-bold text-blue-600 mb-4">Seguimiento de Actividades</h2>
+                  <Input placeholder="Tipo de actividad" value={activity.type} onChange={(e) => setActivity({ ...activity, type: e.target.value })} className="mb-4" />
+                  <Input placeholder="Duración (en minutos)" value={activity.duration} onChange={(e) => setActivity({ ...activity, duration: e.target.value })} className="mb-4" />
+                  <Textarea placeholder="Notas adicionales" value={activity.notes} onChange={(e) => setActivity({ ...activity, notes: e.target.value })} className="mb-4" />
+                  <Button onClick={handleAddActivity} className="w-full mb-4">Registrar Actividad</Button>
+                  <h3 className="text-lg font-bold text-blue-600 mb-2">Historial de Actividades</h3>
+                  <ul>
+                    {activities.map((act, index) => (
+                      <li key={index} className="mb-2">
+                        {act.date} - {act.type} ({act.duration} minutos)
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="notificaciones">
+              <Card className="transition-all hover:shadow-xl">
+                <CardContent>
+                  <h2 className="text-xl font-bold text-blue-600 mb-4">Notificaciones y Recordatorios</h2>
+                  <Textarea placeholder="Configura tus notificaciones" value={notifications} onChange={(e) => setNotifications(e.target.value)} className="mb-4" />
+                  <Button className="w-full">Guardar Notificaciones</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="perfil">
+              <Card className="transition-all hover:shadow-xl">
+                <CardContent>
+                  <h2 className="text-xl font-bold text-blue-600 mb-4">Perfil de Usuario</h2>
+                  <Input placeholder="Nombre completo" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} className="mb-4" />
+                  <Input placeholder="Objetivos de bienestar" value={profile.goals} onChange={(e) => setProfile({ ...profile, goals: e.target.value })} className="mb-4" />
+                  <Input placeholder="Historial de salud" value={profile.healthHistory} onChange={(e) => setProfile({ ...profile, healthHistory: e.target.value })} className="mb-4" />
+                  <Input placeholder="Preferencias personales" value={profile.preferences} onChange={(e) => setProfile({ ...profile, preferences: e.target.value })} className="mb-4" />
+                  <Button className="w-full">Guardar Perfil</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default PaginaBienestar;
